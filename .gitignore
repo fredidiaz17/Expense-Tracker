@@ -1,0 +1,16 @@
+# Entornos virtuales (Virtual Environments)
+.venv/
+
+# Python (Compilados y Cache)
+__pycache__/
+*.py[cod]
+*$py.class
+
+
+# Archivos de datos (opcional, pero recomendado si usas JSON/CSV pesados)
+*.csv
+*.json
+
+
+# Configuraciones de editores
+.idea/
