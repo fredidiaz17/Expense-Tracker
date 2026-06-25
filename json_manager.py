@@ -7,22 +7,24 @@ def write_json(data):
     with open(FILEPATH, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=4, ensure_ascii=False)
 
-def file_reader(data): # SI hay data, se va a agregar algo. De lo contrario, solo se va a leer.
+def file_reader(data): # If there's data, something was modified (add, delete, update).
+    # Otherwise, it is just reading.
 
-    if not Path(FILEPATH).exists():
-        if data: # No existe archivo, pero se va a agregar un gasto. Se crea el archivo.
-            print("Creating expenses file...")
+    if not Path(FILEPATH).exists(): # File doesn't exist...
+        if data: # But an expense is going to be added. The file will be created.
+            print("There were no expenses. Creating expenses file...")
             write_json(data)
             print("Expenses file created successfully.")
-        # No existe archivo y no se va a agregar un gasto. Nada que hacer
-    else:# Existe el archivo
+
+    else: # File exist, so it's necessary read it first.
         with open(FILEPATH, "r", encoding="utf-8") as f:
             json_data = json.load(f)
 
-    if not data: # Leer solo
+    if not data: # Only reading, nothing was modified (add, update, delete)
         return json_data
 
-    json_data.append(data)
+    # Otherwise, something WAS modified, time to rewrite it. The Data was already sent with the planned Json Schema.
+    json_data = data
     write_json(json_data)
     return None
 

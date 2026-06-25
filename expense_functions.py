@@ -19,6 +19,7 @@ months = {
 def list():
     json_data = jsm.file_reader(None)
     data = None
+
     if json_data:
         data = pd.DataFrame(json_data["data"])
 
@@ -50,7 +51,7 @@ def add(expense):
 
 def update(expense):
     json_data = jsm.file_reader(None)
-    id = expense("ID")
+    id = expense["ID"]
     if json_data and json_data["data"]:  # Hay archivo, y hay datos
         if id in json_data["data"]["ID"]:
             loc = json_data["data"]["ID"].index(id)
