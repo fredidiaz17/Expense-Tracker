@@ -3,34 +3,29 @@ from pathlib import Path
 
 FILEPATH = "expenses.json"
 
-def write_json(data):
-    with open(FILEPATH, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=4, ensure_ascii=False)
-
-def file_reader(data): # If there's data, something was modified (add, delete, update).
-    # Otherwise, it is just reading.
-
-    if not Path(FILEPATH).exists(): # File doesn't exist...
-        if data: # But an expense is going to be added. The file will be created.
-            print("There were no expenses. Creating expenses file...")
-            write_json(data)
-            print("Expenses file created successfully.")
-
-    else: # File exist, so it's necessary read it first.
+def read_json():
+    json_data = None
+    if Path(FILEPATH).exists():
         with open(FILEPATH, "r", encoding="utf-8") as f:
             json_data = json.load(f)
+    
+    return json_data
 
-    if not data: # Only reading, nothing was modified (add, update, delete)
-        return json_data
+def write_json(data): # Something was modified (add, delete, update).
+    if data:
+        if not Path(FILEPATH).exists(): # File doesn't exist, so It will be created
+            print("No expenses file found. Creating expenses file...")
 
-    # Otherwise, something WAS modified, time to rewrite it. The Data was already sent with the planned Json Schema.
-    json_data = data
-    write_json(json_data)
-    return None
+        # Something was modified in the Json data (add, delete, update), time to rewrite it.
+        # The Data was already sent with the planned Json Schema.
+        with open(FILEPATH, "w", encoding="utf-8") as f:
+            json.dump(data, f, indent=4, ensure_ascii=False)
+    else:
+        print("No data was sent.")
 
 # Pending
 def to_csv():
-    json_data = file_reader(None)
+    json_data = read_json()
 
     if json_data["data"]:
         df = pd.DataFrame(json_data["data"])

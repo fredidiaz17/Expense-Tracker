@@ -17,20 +17,20 @@ months = {
 }
 
 def list():
-    json_data = jsm.file_reader(None)
+    json_data = jsm.read_json()
     data = None
 
     if json_data:
         data = pd.DataFrame(json_data["data"])
 
-    if data:
+    if isinstance(data, pd.DataFrame): # There is data
         print(data)
-    else:
+    else: # There is no data
         print("There is no expenses or the file doesn't exist. Try adding the first one.")
 
 
 def add(expense):
-    json_data = jsm.file_reader(None)
+    json_data = jsm.read_json()
 
     # Ultimo ID agregado (Last ID)
     if json_data: # Hay data
@@ -46,11 +46,11 @@ def add(expense):
     json_data["data"]["Description"].append(expense["Description"])
     json_data["data"]["Amount"].append(expense["Amount"])
 
-    jsm.file_reader(json_data)
+    jsm.write_json(json_data)
     print(f"Expense added successfully (ID: {id})")
 
 def update(expense):
-    json_data = jsm.file_reader(None)
+    json_data = jsm.read_json()
     id = expense["ID"]
     if json_data and json_data["data"]:  # Hay archivo, y hay datos
         if id in json_data["data"]["ID"]:
@@ -60,7 +60,7 @@ def update(expense):
             json_data["data"]["Description"][loc] = expense["Description"]
             json_data["data"]["Amount"][loc] = expense["Amount"]
 
-            jsm.file_reader(json_data)
+            jsm.write_json(json_data)
             print(f"Expense with ID {id} has been successfully updated.")
         else:
             print(f"There is no expense identified by i: {id}")
@@ -68,7 +68,7 @@ def update(expense):
         print("There is no expenses or expenses file doesn't exist. Try adding the first one.")
 
 def summary(month_num = None):
-    json_data = jsm.file_reader(None)
+    json_data = jsm.read_json()
 
     if json_data:
 
@@ -87,7 +87,7 @@ def summary(month_num = None):
         print("There is no expenses or maybe expenses file doesn't exist. Try creating the first one.")
 
 def delete(id):
-    json_data = jsm.file_reader(None)
+    json_data = jsm.read_json()
 
     if json_data and json_data["data"]: # Hay archivo, y hay datos
         if id in json_data["data"]["ID"]:
@@ -99,7 +99,7 @@ def delete(id):
             del json_data["data"]["Amount"][loc]
 
             print(f"Expense deleted successfully")
-            jsm.file_reader(json_data)
+            jsm.write_json(json_data)
         else:
             print(f"There is no expense identified by id: {id}")
     else:
