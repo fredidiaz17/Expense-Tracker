@@ -26,7 +26,6 @@ def write_json(data): # Something was modified (add, delete, update).
 # Pending
 def to_csv():
     json_data = read_json()
-
     if json_data["data"]:
         df = pd.DataFrame(json_data["data"])
         df.to_csv("expenses.csv", index=False, encoding="utf-8")
