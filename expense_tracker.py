@@ -36,6 +36,7 @@ if __name__ == "__main__":
     parser_update = subparsers.add_parser("update", help="Update expense")
     parser_update.add_argument("--id", type=int, required=True, help="Obligatory ID for update")
     parser_update.add_argument("--description", "-d", help="New description of the expense")
+    parser_update.add_argument("--amount", "-a", help="Amount of the expense")
 
     # Delete
     parser_delete = subparsers.add_parser("delete", help="Delete expense")
@@ -60,9 +61,17 @@ if __name__ == "__main__":
             ef.summary()
 
     if args.command == "update":
-        ef.update({"ID": args.id,
-                   "Description":args.description,
-                   "Amount":args.amount})
+
+        if args.description is None and args.amount is None:
+            parser.error("Amount or Description is required")
+
+        data = {"ID": args.id}
+        if args.description:
+            data["Description"] = args.description
+        if args.amount:
+            data["Amount"] = args.amount
+
+        ef.update(data)
 
     if args.command == "delete":
         ef.delete(args.id)

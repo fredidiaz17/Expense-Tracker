@@ -23,10 +23,10 @@ def no_data(data): # No data messages.
 
 def list():
     json_data = jsm.read_json()
-    data = None
 
     if json_data and json_data["data"]:
         data = pd.DataFrame.from_dict(json_data["data"])
+        print(data)
     else:
         no_data(json_data)
 
