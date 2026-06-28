@@ -1,6 +1,7 @@
 import json_manager as jsm, pandas as pd
 from datetime import date
 
+
 months = {
     1: "January",
     2: "February",
@@ -15,6 +16,8 @@ months = {
     11: "November",
     12: "December"
 }
+
+
 def no_data(data): # No data messages.
     if not data:
         print("Expenses file doesn't exist. Try adding the first expense.")
@@ -41,19 +44,21 @@ def add(expense):
 
     else: # No data
         id = 1
+        json_data = {"l_ID": id, "data": {}}
     json_data["l_ID"] = id
 
     id = str(id)
 
     data = {
         "Date": str(date.today()),
-        "Description": expense["Description"],
+        "Description": expense["Description"].replace("_", " "),
         "Amount": expense["Amount"],
     }
 
-    json_data["data"]["id"] = data
+    json_data["data"][id] = data
     jsm.write_json(json_data)
     print(f"Expense added successfully (ID: {id})")
+
 
 def update(expense):
     json_data = jsm.read_json()
@@ -65,9 +70,9 @@ def update(expense):
         if id in json_data["data"]:
             data = json_data["data"][id]
             data["Date"] = str(date.today())
-            if expense["Description"]:
+            if "Description" in expense:
                 data["Description"] = expense["Description"]
-            if expense["Amount"]:
+            if "Amount" in expense:
                 json_data["data"][id]["Amount"] = expense["Amount"]
 
             jsm.write_json(json_data)
@@ -80,21 +85,33 @@ def update(expense):
     else:
         no_data(json_data)
 
+
 def summary(month_num = None):
     json_data = jsm.read_json()
 
     if json_data and json_data["data"]:
-        df = pd.DataFrame.from_dict(json_data["data"])
+        total = 0
         if not month_num:
-            print(f"Total expenses: {df["Amoun"].sum()}")
+            for data in json_data["data"].values():
+                total += data["Amount"]
+            print(f"Total expenses: ${total}")
         else:
-            df["Date"] = pd.to_datetime(df["Date"])
+            if month_num in months:
+                for data in json_data["data"].values():
+                    date = data["Date"]
+                    if int(data["Date"][5:7]) == month_num:
+                        total += data["Amount"]
 
-            if df["Date"].dt.month == month_num:
-                print(f"Total expenses for {months[month_num]}: {df.groupby(month_num)["Amount"].sum()}")
+                if total != 0:
+                    print(f"Total expenses for {months[month_num]}: ${total}")
+                else:
+                    print(f"There are no expenses in {months[month_num]}.")
+            else:
+                print(f"Given incorrect month number: {month_num}")
 
     else:
         no_data(json_data)
+
 
 def delete(id):
     json_data = jsm.read_json()
