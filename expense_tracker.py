@@ -29,6 +29,7 @@ if __name__ == "__main__":
     parser_summary.add_argument(
         "--month","-m",
         type=int,
+        choices=(1,12),# Number of months
         help="Month of the expense"
         )
 
