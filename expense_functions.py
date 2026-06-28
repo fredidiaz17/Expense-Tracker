@@ -25,8 +25,10 @@ def list():
     json_data = jsm.read_json()
 
     if json_data and json_data["data"]:
-        data = pd.DataFrame.from_dict(json_data["data"])
-        print(data)
+        df = pd.DataFrame.from_dict(json_data["data"], orient="index")
+        df.index.name = "ID"
+        df["Amount"] = "$" + df["Amount"].astype(str)
+        print(df.reset_index().to_string(index=False))
     else:
         no_data(json_data)
 
