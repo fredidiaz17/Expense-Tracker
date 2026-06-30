@@ -78,10 +78,7 @@ def update(expense):
             jsm.write_json(json_data)
             print(f"Expense with ID {id} has been successfully updated.")
         else:
-            if not json_data:
-                print("Expense file doesn't exist. Try adding the first one.")
-            else:
-                print(f"There is no expense identified by id: {id}")
+            print(f"There is no expense identified by id: {id}")
     else:
         no_data(json_data)
 
