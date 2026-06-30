@@ -43,6 +43,9 @@ if __name__ == "__main__":
     parser_delete = subparsers.add_parser("delete", help="Delete expense")
     parser_delete.add_argument("--id", type=int, required=True, help="Obligatory ID for delete")
 
+    # To CSV
+    parser_csv = subparsers.add_parser("csv", help="Export the expenses to a csv file")
+
     if len(sys.argv) == 1:
         parser.print_help()
         sys.exit(1)
@@ -77,3 +80,5 @@ if __name__ == "__main__":
     if args.command == "delete":
         ef.delete(args.id)
 
+    if args.command == "csv":
+        ef.csv_export()

@@ -130,3 +130,11 @@ def delete(id):
                 print(f"There is no expense identified by id: {id}")
     else:
         no_data(json_data)
+
+def csv_export():
+    # This probably can be changed
+    json_data = jsm.read_json()
+    if json_data and json_data["data"]:
+        jsm.to_csv(json_data["data"])
+    else:
+        print("No expenses to import to CSV (There is no expenses or expenses file doesn't exist)")

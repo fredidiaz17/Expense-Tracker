@@ -23,13 +23,8 @@ def write_json(data): # Something was modified (add, delete, update).
     else:
         print("No data was sent.")
 
-# Pending
-def to_csv():
-    json_data = read_json()
-    if json_data["data"]:
-        df = pd.DataFrame(json_data["data"])
-        df.to_csv("expenses.csv", index=False, encoding="utf-8")
-    else:
-        print("There is no expenses or expenses file doesn't exist...")
+def to_csv(json_data):
+    df = pd.DataFrame.from_dict(json_data, orient="index")
+    df.to_csv("expenses.csv", index=False, encoding="utf-8")
 
     
