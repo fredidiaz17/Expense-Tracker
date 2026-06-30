@@ -71,7 +71,7 @@ def update(expense):
             data = json_data["data"][id]
             data["Date"] = str(date.today())
             if "Description" in expense:
-                data["Description"] = expense["Description"]
+                data["Description"] = expense["Description"].replace("_", " ")
             if "Amount" in expense:
                 json_data["data"][id]["Amount"] = expense["Amount"]
 
