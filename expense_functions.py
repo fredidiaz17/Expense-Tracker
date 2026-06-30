@@ -99,7 +99,7 @@ def summary(month_num = None):
             # if month_num in months:
             current_year = f"{date.today().year}"
             for data in json_data["data"].values():
-                if int(data["Date"][5:7]) == current_year and data["Date"]["0:5"]:
+                if int(data["Date"][5:7]) == month_num and data["Date"][0:5] == current_year:
                     total += data["Amount"]
 
             if total != 0:
