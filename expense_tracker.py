@@ -30,7 +30,7 @@ if __name__ == "__main__":
         "--month","-m",
         type=int,
         choices=(1,12),# Number of months
-        help="Month of the expense"
+        help="Month of the current year to be summarized"
         )
 
     # Update

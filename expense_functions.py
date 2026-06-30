@@ -96,18 +96,18 @@ def summary(month_num = None):
                 total += data["Amount"]
             print(f"Total expenses: ${total}")
         else:
-            if month_num in months:
-                for data in json_data["data"].values():
-                    date = data["Date"]
-                    if int(data["Date"][5:7]) == month_num:
-                        total += data["Amount"]
+            # if month_num in months:
+            current_year = f"{date.today().year}"
+            for data in json_data["data"].values():
+                if int(data["Date"][5:7]) == current_year and data["Date"]["0:5"]:
+                    total += data["Amount"]
 
-                if total != 0:
-                    print(f"Total expenses for {months[month_num]}: ${total}")
-                else:
-                    print(f"There are no expenses in {months[month_num]}.")
+            if total != 0:
+                print(f"Total expenses for {months[month_num]}: ${total}")
             else:
-                print(f"Given incorrect month number: {month_num}")
+                print(f"There are no expenses in {months[month_num]} of the current year.")
+            # else:
+               # print(f"Given incorrect month number: {month_num}")
 
     else:
         no_data(json_data)
