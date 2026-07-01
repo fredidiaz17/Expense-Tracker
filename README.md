@@ -62,6 +62,9 @@ Here are some suggestions:
 ## Adiciones interesantes respecto a proyectos anteriores.
 1. subparsers de argparse: Anteriormente ya habia usado argparse con argumentos posicionales y grupos mutuamente excluyentes, pero no subparsers. 
    Definitivamente, es una forma mas elegante de manejar los argumentos, sus requerimientos y exclusiones.
-2. Manejar pandas y Json en un solo proyecto: He manejado Json como almacen de datos, y pandas tambien en tareas de Data Analyst, pero nunca los usé simultaneamente.
+2. Jerarquia del argparse: Como mencioné en el punto anterior, manejar subparser permite crearle comandos (subparser) con sus argumentos (parser anidado al subparser) 
+fue increible, pero mas increible aun (y confuso hasta cierto punto) fue el anidar subcomandos, creando subparser al subparser ya existente. Genial, muy semejante a otras herramientas
+CLI, pero un tanto confuso de primeras, eso si.
+3. Manejar pandas y Json en un solo proyecto: He manejado Json como almacen de datos, y pandas tambien en tareas de Data Analyst, pero nunca los usé simultaneamente.
 En este proyecto, por cuestion de impresión (list) mas comoda, decidi usar pandas para la creació de un Data Frame, y  considerado que tambie usé Json, 
 fue necesario pensar en como sería optimizar las operaciones CRUD del programa y permitir su manejo en pandas. Un reto particular.
