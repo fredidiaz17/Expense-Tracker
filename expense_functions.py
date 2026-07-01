@@ -24,14 +24,20 @@ def no_data(data): # No data messages.
     else:
         print("There is no expenses. Try adding the first one.")
 
-def list():
+def list(category = None):
     json_data = jsm.read_json()
 
     if json_data and json_data["data"]:
         df = pd.DataFrame.from_dict(json_data["data"], orient="index")
         df.index.name = "ID"
         df["Amount"] = "$" + df["Amount"].astype(str)
-        print(df.reset_index().to_string(index=False))
+        if category:
+            category = category.replace("_", " ").capitalize()
+            df = df[df["Category"] == category]
+        if not df.empty:
+            print(df.reset_index().to_string(index=False))
+        else:
+            print(f"No expenses found for {category}")
     else:
         no_data(json_data)
 
@@ -45,6 +51,12 @@ def add(expense):
     else: # No data
         id = 1
         json_data = {"l_ID": id, "data": {}}
+
+    category = "No Category"
+
+    if "Category" in expense:
+        category = expense["Category"].replace("_", " ").capitalize()
+
     json_data["l_ID"] = id
 
     id = str(id)
@@ -53,6 +65,7 @@ def add(expense):
         "Date": str(date.today()),
         "Description": expense["Description"].replace("_", " "),
         "Amount": expense["Amount"],
+        "Category": category
     }
 
     json_data["data"][id] = data
@@ -74,6 +87,8 @@ def update(expense):
                 data["Description"] = expense["Description"].replace("_", " ")
             if "Amount" in expense:
                 json_data["data"][id]["Amount"] = expense["Amount"]
+            if "Category" in expense:
+                json_data["data"][id]["Category"] = expense["Category"].replace("_", " ").capitalize()
 
             jsm.write_json(json_data)
             print(f"Expense with ID {id} has been successfully updated.")
@@ -83,30 +98,43 @@ def update(expense):
         no_data(json_data)
 
 
-def summary(month_num = None):
+def summary(data):
     json_data = jsm.read_json()
 
     if json_data and json_data["data"]:
         total = 0
-        if not month_num:
-            for data in json_data["data"].values():
-                total += data["Amount"]
-            print(f"Total expenses: ${total}")
+        month_num = category = None
+
+        if "Month" in data:
+            month_num = data["Month"]
+        if "Category" in data:
+            category = data["Category"].replace("_", " ").capitalize()
+
+        filtered = []
+        for data in json_data["data"].values():
+            if month_num:
+                current_year = str(date.today().year)
+                if not (int(data["Date"][5:7]) == month_num and data["Date"][:4] == current_year):
+                    continue
+            if category:
+                if data["Category"] != category: # the category from the data has the same style as the searching category
+                    continue
+            filtered.append(data)
+
+        total = sum(item["Amount"] for item in filtered)
+        if total > 0:
+            print("Total expenses", end="")
+            if month_num:
+                print(f" for {months[month_num]}", end="")
+            if category:
+                print(f" with category '{category}'", end="")
+            print(f": ${total}")
         else:
-            # if month_num in months:
-            current_year = f"{date.today().year}"
-            for data in json_data["data"].values():
-                d_date = data["Date"]
-                if int(d_date[5:7]) == month_num and d_date[0:5] == current_year:
-                    total += data["Amount"]
-
-            if total != 0:
-                print(f"Total expenses for {months[month_num]}: ${total}")
-            else:
-                print(f"There are no expenses in {months[month_num]} of the current year.")
-            # else:
-               # print(f"Given incorrect month number: {month_num}")
-
+            print(f"There are no expenses", end=" ")
+            if month_num:
+                print(f" for {months[month_num]} of the current year", end="")
+            if category:
+                print(f" with category '{category}'")
     else:
         no_data(json_data)
 

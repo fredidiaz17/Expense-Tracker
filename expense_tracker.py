@@ -20,9 +20,17 @@ if __name__ == "__main__":
         required= True,
         help= "amount of the expense"
     )
+    parser_add.add_argument(
+        "--category", "-c",
+        help= "category of the expense"
+    )
 
     # List
     parser_list = subparsers.add_parser("list", help="List all expenses")
+    parser_list.add_argument(
+        "--category", "-c",
+        help= "category of the expenses to be shown"
+    )
 
     # Summary
     parser_summary = subparsers.add_parser("summary", help="Show expenses summary")
@@ -32,12 +40,17 @@ if __name__ == "__main__":
         choices=(1,12),# Number of months
         help="Month of the current year to be summarized"
         )
+    parser_summary.add_argument(
+        "--category","-c",
+        help= "category of the expenses to be summarized"
+    )
 
     # Update
     parser_update = subparsers.add_parser("update", help="Update expense")
     parser_update.add_argument("--id", type=int, required=True, help="Obligatory ID for update")
     parser_update.add_argument("--description", "-d", help="New description of the expense")
     parser_update.add_argument("--amount", "-a", help="Amount of the expense")
+    parser_update.add_argument("--category", "-c", help="Category of the expense")
 
     # Delete
     parser_delete = subparsers.add_parser("delete", help="Delete expense")
@@ -53,28 +66,37 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.command == "add":
-        ef.add({"Description":args.description,"Amount":args.amount})
+        data = {"Description":args.description,"Amount":args.amount}
+        if args.category:
+            data["Category"] = args.category
+        ef.add(data)
 
     if args.command == "list":
-        ef.list()
+        if not args.category:
+            ef.list()
+        else:
+            ef.list(args.category)
 
     if args.command == "summary":
+        parameters = {}
         if args.month:
-            ef.summary(args.month)
-        else:
-            ef.summary()
+            parameters["Month"] = args.month
+        if args.category:
+            parameters["Category"] = args.category
+        ef.summary(parameters)
 
     if args.command == "update":
 
-        if args.description is None and args.amount is None:
-            parser.error("Amount or Description is required")
+        if args.description is None and args.amount is None and args.category is None:
+            parser.error("You must enter the Amount, Description or Category of the expense to be updated")
 
         data = {"ID": args.id}
         if args.description:
             data["Description"] = args.description
         if args.amount:
             data["Amount"] = args.amount
-
+        if args.category:
+            data["Category"] = args.category
         ef.update(data)
 
     if args.command == "delete":
