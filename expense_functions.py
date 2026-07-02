@@ -25,10 +25,10 @@ def no_data(data): # No data messages.
         print("There is no expenses. Try adding the first one.")
 
 def list(category = None):
-    json_data = jsm.read_json()
+    json_data = jsm.read_json("data")
 
-    if json_data and json_data["data"]:
-        df = pd.DataFrame.from_dict(json_data["data"], orient="index")
+    if json_data:
+        df = pd.DataFrame.from_dict(json_data, orient="index")
         df.index.name = "ID"
         df["Amount"] = "$" + df["Amount"].astype(str)
         if category:
@@ -39,7 +39,7 @@ def list(category = None):
         else:
             print(f"No expenses found for {category}")
     else:
-        no_data(json_data)
+        print("No expenses found.")
 
 
 def add(expense):
@@ -99,10 +99,9 @@ def update(expense):
 
 
 def summary(data):
-    json_data = jsm.read_json()
+    json_data = jsm.read_json("data")
 
-    if json_data and json_data["data"]:
-        total = 0
+    if json_data:
         month_num = category = None
 
         if "Month" in data:
@@ -136,7 +135,7 @@ def summary(data):
             if category:
                 print(f" with category '{category}'")
     else:
-        no_data(json_data)
+        print("No expenses to summarize.")
 
 
 def delete(id):
@@ -164,3 +163,26 @@ def csv_export():
         jsm.to_csv(json_data["data"])
     else:
         print("No expenses to import to CSV (There is no expenses or expenses file doesn't exist)")
+
+def set_budget(data):
+    json_data = jsm.read_json()
+
+    if "budget" not in json_data:
+        json_data["budget"] = {}
+
+    year = data["Year"] if "Year" in data else str(date.today().year)
+    budget_date = f"{data["Month"]}-{year}"
+
+    if data["Amount"] == 0:
+        del json_data["budget"][budget_date]
+    else:
+        json_data["budget"][budget_date] = data["Amount"]
+
+def show_budget():
+    json_data = jsm.read_json("budget")
+    if json_data:
+        print("List of all existing budgets:")
+        for date, amount in json_data.items():
+            print(f"-- {date}: {amount}")
+    else:
+        print("No month has a budget yet")

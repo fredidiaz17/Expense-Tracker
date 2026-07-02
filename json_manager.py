@@ -3,12 +3,13 @@ from pathlib import Path
 
 FILEPATH = "expenses.json"
 
-def read_json():
+def read_json(key = None):
     json_data = None
     if Path(FILEPATH).exists():
         with open(FILEPATH, "r", encoding="utf-8") as f:
             json_data = json.load(f)
-    
+    if key is not None and key in json_data:
+        json_data = json_data[key]
     return json_data
 
 def write_json(data): # Something was modified (add, delete, update).

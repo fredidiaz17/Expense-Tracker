@@ -59,6 +59,26 @@ if __name__ == "__main__":
     # To CSV
     parser_csv = subparsers.add_parser("csv", help="Export the expenses to a csv file")
 
+    # Budget
+    parser_budget = subparsers.add_parser("budget", help="Show month's budget")
+    sub_parser_action = parser_budget.add_subparsers(dest="budget_action", help="Budget action")
+
+    parser_set = sub_parser_action.add_parser("set", help="Set a budget for a given month")
+    parser_set.add_argument("--month", "-m",
+                               type=int,
+                               choices=(1, 12),
+                               required=True,
+                               help="Month to set a budget")
+    parser_set.add_argument("--year", "-y",
+                               type=int,
+                               help="Year of the month to set a budget")
+    parser_set.add_argument("--amount", "-a",
+                            required=True,
+                            type=int,
+                            help="Amount of the month to set a budget")
+
+    parser_list = sub_parser_action.add_parser("list", help="List budgets")
+
     if len(sys.argv) == 1:
         parser.print_help()
         sys.exit(1)
@@ -104,3 +124,23 @@ if __name__ == "__main__":
 
     if args.command == "csv":
         ef.csv_export()
+
+    if args.command == "budget":
+        if args.budget_action == "set":
+            parameters = {"Month":args.month, "Amount":args.amount}
+            if args.year:
+
+                # positive number?
+                if args.year < 0:
+                    parser.error("Please enter a valid year. It should be a positive number")
+
+                # 4 digits?
+                if len(str(abs(args.year))) != 4:
+                    parser.error("Please enter a valid year. It should have 4 digits")
+
+                parameters["Year"] = args.year
+
+            ef.set_budget(parameters)
+
+        if args.budget_action == "list":
+            ef.show_budget()
