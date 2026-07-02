@@ -68,3 +68,4 @@ CLI, pero un tanto confuso de primeras, eso si.
 3. Manejar pandas y Json en un solo proyecto: He manejado Json como almacen de datos, y pandas tambien en tareas de Data Analyst, pero nunca los usé simultaneamente.
 En este proyecto, por cuestion de impresión (list) mas comoda, decidi usar pandas para la creació de un Data Frame, y  considerado que tambie usé Json, 
 fue necesario pensar en como sería optimizar las operaciones CRUD del programa y permitir su manejo en pandas. Un reto particular.
+4. Closures: Primera vez que los uso/hago, bastante util, he de admitir.
