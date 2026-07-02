@@ -1,5 +1,6 @@
-import json_manager as jsm, pandas as pd
+import json_manager as jsm #, pandas as pd
 from datetime import date
+from pandas import DataFrame
 
 
 months = {
@@ -28,7 +29,7 @@ def list(category = None):
     json_data = jsm.read_json("data")
 
     if json_data:
-        df = pd.DataFrame.from_dict(json_data, orient="index")
+        df = DataFrame.from_dict(json_data, orient="index")
         df.index.name = "ID"
         df["Amount"] = "$" + df["Amount"].astype(str)
         if category:

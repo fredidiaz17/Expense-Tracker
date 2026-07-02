@@ -1,6 +1,6 @@
-import json, pandas as pd
+import json #, pandas as pd
 from pathlib import Path
-
+from pandas import DataFrame
 FILEPATH = "expenses.json"
 
 def read_json(key = None):
@@ -25,7 +25,7 @@ def write_json(data): # Something was modified (add, delete, update).
         print("No data was sent.")
 
 def to_csv(json_data):
-    df = pd.DataFrame.from_dict(json_data, orient="index")
+    df = DataFrame.from_dict(json_data, orient="index")
     df.to_csv("expenses.csv", index=False, encoding="utf-8")
 
     

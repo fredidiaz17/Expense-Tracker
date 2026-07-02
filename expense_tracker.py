@@ -4,6 +4,26 @@ import expense_functions as ef
 import argparse
 
 if __name__ == "__main__":
+    def validation_amount(amount):
+        try:
+            amount = int(amount)
+        except ValueError:
+            parser.error("Amount must be an integer")
+
+        if amount < 0:
+            parser.error("Amount must be positive")
+        elif amount == 0:
+            parser.error("Amount cannot be zero")
+        else:
+            return amount
+
+    def validation_length(argument, max_length):
+        def real_validation(text):
+            if len(text) > max_length:
+                parser.error(f"{argument} is too long, it's length must be at most {max_length} characters.")
+            return text
+        return real_validation
+
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers(dest="command", required=True, help="Available commands")
 
@@ -13,15 +33,17 @@ if __name__ == "__main__":
     parser_add.add_argument(
         "--description","-d",
         required= True,
+        type=validation_length("description",100),
         help="Description of the expense")
     parser_add.add_argument(
         "--amount", "-a",
-        type=int,
+        type=validation_amount,
         required= True,
         help= "amount of the expense"
     )
     parser_add.add_argument(
         "--category", "-c",
+        type= validation_length("category",30),
         help= "category of the expense"
     )
 
@@ -29,6 +51,7 @@ if __name__ == "__main__":
     parser_list = subparsers.add_parser("list", help="List all expenses")
     parser_list.add_argument(
         "--category", "-c",
+        type=validation_length("category", 30),
         help= "category of the expenses to be shown"
     )
 
@@ -42,15 +65,16 @@ if __name__ == "__main__":
         )
     parser_summary.add_argument(
         "--category","-c",
+        type=validation_length("category", 30),
         help= "category of the expenses to be summarized"
     )
 
     # Update
     parser_update = subparsers.add_parser("update", help="Update expense")
     parser_update.add_argument("--id", type=int, required=True, help="Obligatory ID for update")
-    parser_update.add_argument("--description", "-d", help="New description of the expense")
-    parser_update.add_argument("--amount", "-a", help="Amount of the expense")
-    parser_update.add_argument("--category", "-c", help="Category of the expense")
+    parser_update.add_argument("--description", "-d", type=validation_length("description",100), help="New description of the expense")
+    parser_update.add_argument("--amount", "-a", type=validation_amount, help="Amount of the expense")
+    parser_update.add_argument("--category","-c",type= validation_length("category",30), help="Category of the expense")
 
     # Delete
     parser_delete = subparsers.add_parser("delete", help="Delete expense")
@@ -74,7 +98,7 @@ if __name__ == "__main__":
                                help="Year of the month to set a budget")
     parser_set.add_argument("--amount", "-a",
                             required=True,
-                            type=int,
+                            type=validation_amount,
                             help="Amount of the month to set a budget")
 
     parser_list = sub_parser_action.add_parser("list", help="List budgets")
