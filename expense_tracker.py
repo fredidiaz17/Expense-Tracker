@@ -18,7 +18,9 @@ if __name__ == "__main__":
     def validation_length(argument, max_length):
         def real_validation(text):
             if len(text) > max_length:
-                parser.error(f"{argument} is too long, it's length must be at most {max_length} characters.")
+                raise argparse.ArgumentTypeError(
+                    f"{argument} is too long, it's length must be at most {max_length} characters."
+                )
             return text
         return real_validation
 
