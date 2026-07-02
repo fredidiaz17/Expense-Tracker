@@ -12,8 +12,6 @@ if __name__ == "__main__":
 
         if amount < 0:
             parser.error("Amount must be positive")
-        elif amount == 0:
-            parser.error("Amount cannot be zero")
         else:
             return amount
 
