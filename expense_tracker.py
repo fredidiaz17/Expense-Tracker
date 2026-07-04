@@ -2,6 +2,7 @@
 import sys
 import expense_functions as ef
 import argparse
+from datetime import date
 
 if __name__ == "__main__":
     def validation_amount(amount):
@@ -12,8 +13,9 @@ if __name__ == "__main__":
 
         if amount < 0:
             parser.error("Amount must be positive")
-        else:
-            return amount
+        if amount == 0:
+            parser.error("Amount cannot be zero")
+        return amount
 
     def validation_length(argument, max_length):
         def real_validation(text):
@@ -23,6 +25,21 @@ if __name__ == "__main__":
                 )
             return text
         return real_validation
+
+    def validation_year(year):
+
+        # positive number?
+        if year < 0:
+            parser.error("Please enter a valid year. It should be a positive number")
+
+        # 4 digits?
+        if len(str(abs(year))) != 4:
+            parser.error("Please enter a valid year. It should have 4 digits")
+
+        # between 2000 and 10 years from now?
+        if 2000 > year or year > (date.today().year + 10):
+            parser.error("The year should be between 2000 and 10 years from now")
+        return year
 
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers(dest="command", required=True, help="Available commands")
@@ -60,7 +77,7 @@ if __name__ == "__main__":
     parser_summary.add_argument(
         "--month","-m",
         type=int,
-        choices=(1,12),# Number of months
+        choices=range(1,13),# Number of months
         help="Month of the current year to be summarized"
         )
     parser_summary.add_argument(
@@ -71,14 +88,14 @@ if __name__ == "__main__":
 
     # Update
     parser_update = subparsers.add_parser("update", help="Update expense")
-    parser_update.add_argument("--id", type=int, required=True, help="Obligatory ID for update")
+    parser_update.add_argument("id", type=int, help="Obligatory ID for update")
     parser_update.add_argument("--description", "-d", type=validation_length("description",100), help="New description of the expense")
     parser_update.add_argument("--amount", "-a", type=validation_amount, help="Amount of the expense")
     parser_update.add_argument("--category","-c",type= validation_length("category",30), help="Category of the expense")
 
     # Delete
     parser_delete = subparsers.add_parser("delete", help="Delete expense")
-    parser_delete.add_argument("--id", type=int, required=True, help="Obligatory ID for delete")
+    parser_delete.add_argument("id", type=int, help="Obligatory ID for delete")
 
     # To CSV
     parser_csv = subparsers.add_parser("csv", help="Export the expenses to a csv file")
@@ -90,15 +107,15 @@ if __name__ == "__main__":
     parser_set = sub_parser_action.add_parser("set", help="Set a budget for a given month")
     parser_set.add_argument("--month", "-m",
                                type=int,
-                               choices=(1, 12),
+                               choices=range(1, 13),
                                required=True,
                                help="Month to set a budget")
     parser_set.add_argument("--year", "-y",
-                               type=int,
+                               type=validation_year,
                                help="Year of the month to set a budget")
     parser_set.add_argument("--amount", "-a",
                             required=True,
-                            type=validation_amount,
+                            type=int,
                             help="Amount of the month to set a budget")
 
     parser_list = sub_parser_action.add_parser("list", help="List budgets")
@@ -150,18 +167,13 @@ if __name__ == "__main__":
         ef.csv_export()
 
     if args.command == "budget":
+        if not args.budget_action:
+            parser.error('use "set" to set a budget for a given month, "list" to show all existing budgets')
         if args.budget_action == "set":
             parameters = {"Month":args.month, "Amount":args.amount}
+            if args.amount < 0:
+                parser.error("Budget's amount cannot be negative")
             if args.year:
-
-                # positive number?
-                if args.year < 0:
-                    parser.error("Please enter a valid year. It should be a positive number")
-
-                # 4 digits?
-                if len(str(abs(args.year))) != 4:
-                    parser.error("Please enter a valid year. It should have 4 digits")
-
                 parameters["Year"] = args.year
 
             ef.set_budget(parameters)

@@ -8,8 +8,11 @@ def read_json(key = None):
     if Path(FILEPATH).exists():
         with open(FILEPATH, "r", encoding="utf-8") as f:
             json_data = json.load(f)
-    if key is not None and key in json_data:
-        json_data = json_data[key]
+    if key is not None:
+        if json_data is not None and key in json_data:
+            json_data = json_data[key]
+        else:
+            json_data = None
     return json_data
 
 def write_json(data): # Something was modified (add, delete, update).
